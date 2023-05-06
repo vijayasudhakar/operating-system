@@ -1,0 +1,54 @@
+ #include <stdio.h>
+
+int main()
+{
+    int frames[3]; // array to store the page frames
+    int page_faults = 0; // counter for page faults
+    int frame_pointer = 0; // pointer to the current frame
+
+    // initialize all frames to -1 (empty)
+    for (int i = 0; i < 3; i++) {
+        frames[i] = -1;
+    }
+
+    // page reference sequence
+    int page_sequence[] = {4, 1, 2, 4, 3, 2, 1, 5};
+    int num_pages = sizeof(page_sequence) / sizeof(page_sequence[0]);
+
+    // loop through the pages
+    for (int i = 0; i < num_pages; i++) {
+        int page = page_sequence[i];
+        int found = 0;
+
+        // check if page is already in a frame
+        for (int j = 0; j < 3; j++) {
+            if (frames[j] == page) {
+                found = 1;
+                break;
+            }
+        }
+
+        // if page is not in a frame, replace the oldest page
+        if (!found) {
+            frames[frame_pointer] = page;
+            frame_pointer = (frame_pointer + 1) % 3; // move pointer to the next frame
+            page_faults++;
+        }
+
+        // print current page frames
+        printf("Page %d: ", page);
+        for (int j = 0; j < 3; j++) {
+            if (frames[j] == -1) {
+                printf("[ ] ");
+            } else {
+                printf("[%d] ", frames[j]);
+            }
+        }
+        printf("\n");
+    }
+
+    // print total number of page faults
+    printf("Number of page faults: %d\n", page_faults);
+
+    return 0;
+}
