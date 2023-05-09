@@ -1,0 +1,11 @@
+# Hello World Program in Bash Shell
+echo " enter the number"
+read n
+r='expr $n % 2'
+echo " the result"
+if [$r -eg 0 ]
+then 
+echo "$n is even number"
+else 
+echo "$n is odd number"
+fi
