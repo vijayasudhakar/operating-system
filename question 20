@@ -1,0 +1,54 @@
+#include <stdio.h>
+
+// Structure to represent memory block
+typedef struct {
+    int size;
+    int allocated;
+} MemoryBlock;
+
+// Function to allocate memory using worst-fit algorithm
+void worstFit(MemoryBlock memory[], int numBlocks, int processSize) {
+    int worstIndex = -1;
+    int worstSize = -1;
+
+    // Find the memory block with the largest size that can accommodate the process
+    for (int i = 0; i < numBlocks; i++) {
+        if (!memory[i].allocated && memory[i].size >= processSize) {
+            if (worstIndex == -1 || memory[i].size > worstSize) {
+                worstIndex = i;
+                worstSize = memory[i].size;
+            }
+        }
+    }
+
+    // Allocate the process to the worst-fit memory block
+    if (worstIndex != -1) {
+        memory[worstIndex].allocated = 1;
+        printf("Process of size %d KB allocated to memory block %d\n", processSize, worstIndex + 1);
+    } else {
+        printf("Cannot allocate process of size %d KB\n", processSize);
+    }
+}
+
+int main() {
+    // Define memory partitions
+    MemoryBlock memory[] = {
+        {300, 0},
+        {600, 0},
+        {350, 0},
+        {200, 0},
+        {750, 0},
+        {125, 0}
+    };
+
+    // Define process sizes
+    int processSizes[] = {115, 500, 358, 200, 375};
+    int numProcesses = sizeof(processSizes) / sizeof(processSizes[0]);
+
+    // Allocate memory for each process
+    for (int i = 0; i < numProcesses; i++) {
+        worstFit(memory, sizeof(memory) / sizeof(memory[0]), processSizes[i]);
+    }
+
+    return 0;
+}
