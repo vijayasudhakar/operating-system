@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_DIRECTORIES 10
+#define MAX_FILES 10
+#define MAX_NAME_LENGTH 20
+
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    int num_files;
+    char files[MAX_FILES][MAX_NAME_LENGTH];
+} Directory;
+
+Directory directories[MAX_DIRECTORIES];
+int num_directories = 0;
+
+int create_directory(const char* name) {
+    if (num_directories >= MAX_DIRECTORIES) {
+        printf("Error: Maximum number of directories reached.\n");
+        return -1;
+    }
+
+    strcpy(directories[num_directories].name, name);
+    directories[num_directories].num_files = 0;
+    num_directories++;
+
+    printf("Directory '%s' created successfully.\n", name);
+    return 0;
+}
+
+int create_file(const char* directory_name, const char* file_name) {
+    int i;
+    Directory* directory = NULL;
+
+    for (i = 0; i < num_directories; i++) {
+        if (strcmp(directories[i].name, directory_name) == 0) {
+            directory = &directories[i];
+            break;
+        }
+    }
+
+    if (directory == NULL) {
+        printf("Error: Directory '%s' not found.\n", directory_name);
+        return -1;
+    }
+
+    if (directory->num_files >= MAX_FILES) {
+        printf("Error: Maximum number of files reached in directory '%s'.\n", directory_name);
+        return -1;
+    }
+
+    strcpy(directory->files[directory->num_files], file_name);
+    directory->num_files++;
+
+    printf("File '%s' created successfully in directory '%s'.\n", file_name, directory_name);
+    return 0;
+}
+
+void list_files(const char* directory_name) {
+    int i;
+    Directory* directory = NULL;
+
+    for (i = 0; i < num_directories; i++) {
+        if (strcmp(directories[i].name, directory_name) == 0) {
+            directory = &directories[i];
+            break;
+        }
+    }
+
+    if (directory == NULL) {
+        printf("Error: Directory '%s' not found.\n", directory_name);
+        return;
+    }
+
+    printf("Files in directory '%s':\n", directory_name);
+    for (i = 0; i < directory->num_files; i++) {
+        printf("- %s\n", directory->files[i]);
+    }
+}
+
+int main() {
+    int choice;
+    char directory_name[MAX_NAME_LENGTH];
+    char file_name[MAX_NAME_LENGTH];
+
+    while (1) {
+        printf("\n1. Create Directory\n");
+        printf("2. Create File\n");
+        printf("3. List Files in Directory\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter directory name: ");
+                scanf("%s", directory_name);
+                create_directory(directory_name);
+                break;
+            case 2:
+                printf("Enter directory name: ");
+                scanf("%s", directory_name);
+                printf("Enter file name: ");
+                scanf("%s", file_name);
+                create_file(directory_name, file_name);
+                break;
+            case 3:
+                printf("Enter directory name: ");
+                scanf("%s", directory_name);
+                list_files(directory_name);
+                break;
+            case 4:
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0
+    
