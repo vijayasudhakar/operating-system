@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+#define MAX_COUNT 10
+
+int sharedData;  // Shared integer data
+sem_t semaphore; // Semaphore for synchronization
+
+void* thread1(void* arg)
+{
+    int doubledData;
+
+    // Read shared data
+    sem_wait(&semaphore);
+    doubledData = sharedData * 2;
+    sem_post(&semaphore);
+
+    // Print doubled data
+    printf("Thread 1: Doubled Data = %d\n", doubledData);
+
+    pthread_exit(NULL);
+}
+
+void* thread2(void* arg)
+{
+    int multipliedData;
+
+    // Read shared data
+    sem_wait(&semaphore);
+    multipliedData = sharedData * 5;
+    sem_post(&semaphore);
+
+    // Print multiplied data
+    printf("Thread 2: Multiplied Data = %d\n", multipliedData);
+
+    pthread_exit(NULL);
+}
+
+int main()
+{
+    pthread_t tid1, tid2;
+
+    // Initialize semaphore
+    sem_init(&semaphore, 0, 1);
+
+    // Initialize shared data
+    sharedData = 5;
+
+    // Create thread 1
+    pthread_create(&tid1, NULL, thread1, NULL);
+
+    // Create thread 2
+    pthread_create(&tid2, NULL, thread2, NULL);
+
+    // Wait for thread 1 to finish
+    pthread_join(tid1, NULL);
+
+    // Wait for thread 2 to finish
+    pthread_join(tid2, NULL);
+
+    // Destroy semaphore
+    sem_destroy(&semaphore);
+
+    return 0;
+}
