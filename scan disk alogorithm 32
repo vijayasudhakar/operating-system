@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to sort the tracks in ascending order
+void sortTracks(int *tracks, int numTracks) {
+    int i, j, temp;
+    for (i = 0; i < numTracks - 1; i++) {
+        for (j = i + 1; j < numTracks; j++) {
+            if (tracks[i] > tracks[j]) {
+                temp = tracks[i];
+                tracks[i] = tracks[j];
+                tracks[j] = temp;
+            }
+        }
+    }
+}
+
+// Function to perform SCAN disk scheduling algorithm
+int scanDisk(int *tracks, int numTracks, int headPosition) {
+    int totalHeadMovement = 0;
+    int i, currentIndex, direction;
+
+    // Sort the tracks in ascending order
+    sortTracks(tracks, numTracks);
+
+    // Find the direction of head movement
+    if (headPosition < tracks[0])
+        direction = 1;  // Move towards higher tracks
+    else
+        direction = -1; // Move towards lower tracks
+
+    // Find the index of head position in the tracks
+    for (i = 0; i < numTracks; i++) {
+        if (tracks[i] == headPosition) {
+            currentIndex = i;
+            break;
+        }
+    }
+
+    // Perform SCAN algorithm
+    while (currentIndex >= 0 && currentIndex < numTracks) {
+        totalHeadMovement += abs(headPosition - tracks[currentIndex]);
+        headPosition = tracks[currentIndex];
+
+        if (currentIndex == 0 || currentIndex == numTracks - 1)
+            break;
+
+        currentIndex += direction;
+    }
+
+    return totalHeadMovement;
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18, 90, 150, 160, 184};
+    int numTracks = sizeof(tracks) / sizeof(tracks[0]);
+    int headPosition = 55;
+    int averageHeadMovement;
+
+    averageHeadMovement = scanDisk(tracks, numTracks, headPosition) / numTracks;
+
+    printf("Average head movement: %d\n", averageHeadMovement);
+
+    return 0;
+}
