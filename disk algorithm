@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define NUM_TRACKS 5
+
+int compare(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int absDiff(int a, int b) {
+    return (a > b) ? (a - b) : (b - a);
+}
+
+int cscan(int tracks[], int head, int direction, int num_tracks) {
+    int total_movement = 0;
+
+    // Sort the tracks in ascending order
+    qsort(tracks, num_tracks, sizeof(int), compare);
+
+    // Find the index of head position
+    int i;
+    for (i = 0; i < num_tracks; i++) {
+        if (tracks[i] >= head)
+            break;
+    }
+
+    // Calculate the total head movement
+    if (direction == 1) { // Moving towards higher track numbers
+        for (; i < num_tracks; i++) {
+            total_movement += absDiff(head, tracks[i]);
+            head = tracks[i];
+        }
+        total_movement += absDiff(head, tracks[num_tracks - 1]);
+        head = tracks[num_tracks - 1];
+        total_movement += absDiff(head, 0);
+        head = 0;
+    } else { // Moving towards lower track numbers
+        for (; i >= 0; i--) {
+            total_movement += absDiff(head, tracks[i]);
+            head = tracks[i];
+        }
+        total_movement += absDiff(head, 0);
+        head = 0;
+        total_movement += absDiff(head, tracks[0]);
+        head = tracks[0];
+    }
+
+    return total_movement;
+}
+
+int main() {
+    int tracks[NUM_TRACKS] = {55, 58, 60, 70, 18};
+    int head_position = 55;
+    int direction = 1; // 1: towards higher track numbers, 0: towards lower track numbers
+
+    int average_movement = cscan(tracks, head_position, direction, NUM_TRACKS) / NUM_TRACKS;
+
+    printf("Average head movement: %d\n", average_movement);
+
+    return 0;
+}
