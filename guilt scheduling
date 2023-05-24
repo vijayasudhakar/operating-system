@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+
+// Function to calculate absolute difference between two numbers
+int abs_diff(int a, int b) {
+    return (a > b) ? (a - b) : (b - a);
+}
+
+// Function to find the index of the track with the shortest seek time
+int find_shortest_seek_time(int tracks[], bool visited[], int current_position, int num_tracks) {
+    int min_distance = INT_MAX;
+    int index = -1;
+
+    for (int i = 0; i < num_tracks; i++) {
+        if (!visited[i] && abs_diff(tracks[i], current_position) < min_distance) {
+            min_distance = abs_diff(tracks[i], current_position);
+            index = i;
+        }
+    }
+
+    return index;
+}
+
+// Function to perform SSTF disk scheduling algorithm
+void sstf_disk_scheduling(int tracks[], int num_tracks, int initial_position) {
+    bool visited[num_tracks];
+
+    for (int i = 0; i < num_tracks; i++)
+        visited[i] = false;
+
+    int total_head_movement = 0;
+    int current_position = initial_position;
+
+    printf("Sequence of tracks visited:\n");
+
+    for (int i = 0; i < num_tracks; i++) {
+        int next_track = find_shortest_seek_time(tracks, visited, current_position, num_tracks);
+
+        if (next_track == -1)
+            break;
+
+        visited[next_track] = true;
+        printf("%d ", tracks[next_track]);
+
+        total_head_movement += abs_diff(tracks[next_track], current_position);
+        current_position = tracks[next_track];
+    }
+
+    printf("\n");
+
+    float average_head_movement = (float)total_head_movement / num_tracks;
+    printf("Average head movement: %.2f\n", average_head_movement);
+}
+
+int main() {
+    int num_tracks = 5;
+    int tracks[] = { 55, 58, 60, 70, 18 };
+    int initial_position = 50;
+
+    printf("Track positions:\n");
+    for (int i = 0; i < num_tracks; i++)
+        printf("%d ", tracks[i]);
+
+    printf("\nInitial head position: %d\n", initial_position);
+
+    sstf_disk_scheduling(tracks, num_tracks, initial_position);
+
+    return 0;
+}
